@@ -112,9 +112,10 @@ public:
         print_state(initial_state_);
         std::cout << "\n\n";
 
-        uniform_cost_tree_search();
+        
         uniform_cost_graph_search();
         iterative_deepening_tree_search();
+		uniform_cost_tree_search();
     }
 
 private:
