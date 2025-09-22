@@ -1,0 +1,101 @@
+==========================
+       INSTANCE 1
+==========================
+Solving for initial state: [V(2,2), d(1,2), d(2,4), d(3,5)]
+
+--- Uniform Cost Graph Search ---
+a. First 5 expanded nodes' states:
+   1. [V(2,2), d(1,2), d(2,4), d(3,5)]
+   2. [V(3,2), d(1,2), d(2,4), d(3,5)]
+   3. [V(1,2), d(1,2), d(2,4), d(3,5)]
+   4. [V(2,3), d(1,2), d(2,4), d(3,5)]
+   5. [V(2,1), d(1,2), d(2,4), d(3,5)]
+b. Nodes expanded: 89
+   Nodes generated: 370
+   CPU time: 0.0030 seconds
+c. Solution path:
+   Up, Suck, Down, Right, Right, Suck, Down, Right, Suck
+   Number of moves: 9
+   Solution cost: 6.7
+----------------------------------
+--- Iterative Deepening Tree Search ---
+a. First 5 expanded nodes' states:
+   1. [V(2,2), d(1,2), d(2,4), d(3,5)]
+   2. [V(1,2), d(1,2), d(2,4), d(3,5)]
+   3. [V(2,2), d(1,2), d(2,4), d(3,5)]
+   4. [V(1,2), d(1,2), d(2,4), d(3,5)]
+   5. [V(2,2), d(1,2), d(2,4), d(3,5)]
+b. Nodes expanded: 87399
+   Nodes generated: 380350
+   CPU time: 0.3652 seconds
+c. Solution path:
+   Up, Suck, Down, Right, Right, Suck, Down, Right, Suck
+   Number of moves: 9
+   Solution cost: 6.7
+----------------------------------
+--- Uniform Cost Tree Search ---
+a. First 5 expanded nodes' states:
+   1. [V(2,2), d(1,2), d(2,4), d(3,5)]
+   2. [V(2,2), d(1,2), d(2,4), d(3,5)]
+   3. [V(3,2), d(1,2), d(2,4), d(3,5)]
+   4. [V(1,2), d(1,2), d(2,4), d(3,5)]
+   5. [V(2,3), d(1,2), d(2,4), d(3,5)]
+b. Nodes expanded: 331475
+   Nodes generated: 1458174
+   CPU time: 1.6578 seconds
+c. Solution path:
+   Up, Suck, Right, Right, Down, Suck, Down, Right, Suck
+   Number of moves: 9
+   Solution cost: 6.7
+----------------------------------
+
+==========================
+       INSTANCE 2
+==========================
+Solving for initial state: [V(3,2), d(1,2), d(2,1), d(2,4), d(3,3)]
+
+--- Uniform Cost Graph Search ---
+a. First 5 expanded nodes' states:
+   1. [V(3,2), d(1,2), d(2,1), d(2,4), d(3,3)]
+   2. [V(4,2), d(1,2), d(2,1), d(2,4), d(3,3)]
+   3. [V(2,2), d(1,2), d(2,1), d(2,4), d(3,3)]
+   4. [V(3,3), d(1,2), d(2,1), d(2,4), d(3,3)]
+   5. [V(3,1), d(1,2), d(2,1), d(2,4), d(3,3)]
+b. Nodes expanded: 279
+   Nodes generated: 1154
+   CPU time: 0.0027 seconds
+c. Solution path:
+   Right, Suck, Right, Up, Suck, Up, Left, Left, Suck, Down, Left, Suck
+   Number of moves: 12
+   Solution cost: 9.5
+----------------------------------
+--- Iterative Deepening Tree Search ---
+a. First 5 expanded nodes' states:
+   1. [V(3,2), d(1,2), d(2,1), d(2,4), d(3,3)]
+   2. [V(2,2), d(1,2), d(2,1), d(2,4), d(3,3)]
+   3. [V(1,2), d(1,2), d(2,1), d(2,4), d(3,3)]
+   4. [V(2,2), d(1,2), d(2,1), d(2,4), d(3,3)]
+   5. [V(1,2), d(1,2), d(2,1), d(2,4), d(3,3)]
+b. Nodes expanded: 17597803
+   Nodes generated: 76550724
+   CPU time: 75.9259 seconds
+c. Solution path:
+   Right, Suck, Up, Right, Suck, Up, Left, Left, Suck, Down, Left, Suck
+   Number of moves: 12
+   Solution cost: 9.5
+----------------------------------
+--- Uniform Cost Tree Search ---
+a. First 5 expanded nodes' states:
+   1. [V(3,2), d(1,2), d(2,1), d(2,4), d(3,3)]
+   2. [V(3,2), d(1,2), d(2,1), d(2,4), d(3,3)]
+   3. [V(4,2), d(1,2), d(2,1), d(2,4), d(3,3)]
+   4. [V(2,2), d(1,2), d(2,1), d(2,4), d(3,3)]
+   5. [V(3,3), d(1,2), d(2,1), d(2,4), d(3,3)]
+b. Nodes expanded: 55223888
+   Nodes generated: 239762623
+   CPU time: 441.5566 seconds
+c. Solution path:
+   Right, Suck, Up, Right, Suck, Up, Left, Left, Suck, Down, Left, Suck
+   Number of moves: 12
+   Solution cost: 9.5
+----------------------------------
