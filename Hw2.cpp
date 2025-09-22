@@ -10,6 +10,7 @@
 #include <cmath>
 #include <iomanip>
 #include <tuple>
+#include <fstream> // Required for file I/O
 
 // --- Data Structures ---
 
@@ -105,17 +106,18 @@ public:
     }
 
     /**
-     * @brief Runs all three search algorithms on the problem instance.
+     * @brief Runs all three search algorithms on the problem instance, writing output to the given stream.
+     * @param os The output stream (e.g., std::cout or an std::ofstream file stream).
      */
-    void solve() {
-        std::cout << "Solving for initial state: ";
-        print_state(initial_state_);
-        std::cout << "\n\n";
+    void solve(std::ostream& os) {
+        os << "Solving for initial state: ";
+        print_state(os, initial_state_);
+        os << "\n\n";
 
         
-        uniform_cost_graph_search();
-        iterative_deepening_tree_search();
-		uniform_cost_tree_search();
+        uniform_cost_graph_search(os);
+        iterative_deepening_tree_search(os);
+		uniform_cost_tree_search(os); // This can be run, but may exhaust memory.
     }
 
 private:
@@ -185,24 +187,24 @@ private:
     
     // --- Output and Reporting ---
 
-    void print_state(const State& state) const {
-        std::cout << "[V(" << state.agent_loc.row << "," << state.agent_loc.col << ")";
+    void print_state(std::ostream& os, const State& state) const {
+        os << "[V(" << state.agent_loc.row << "," << state.agent_loc.col << ")";
         for (const auto& dirt : state.dirty_locs) {
-            std::cout << ", d(" << dirt.row << "," << dirt.col << ")";
+            os << ", d(" << dirt.row << "," << dirt.col << ")";
         }
-        std::cout << "]";
+        os << "]";
     }
 
-    void print_first_n_expanded(const std::vector<State>& expanded_states) const {
-        std::cout << "a. First " << REPORT_FIRST_N_EXPANDED << " expanded nodes' states:\n";
+    void print_first_n_expanded(std::ostream& os, const std::vector<State>& expanded_states) const {
+        os << "a. First " << REPORT_FIRST_N_EXPANDED << " expanded nodes' states:\n";
         for (int i = 0; i < expanded_states.size(); ++i) {
-            std::cout << "   " << i + 1 << ". ";
-            print_state(expanded_states[i]);
-            std::cout << "\n";
+            os << "   " << i + 1 << ". ";
+            print_state(os, expanded_states[i]);
+            os << "\n";
         }
     }
     
-    void print_solution(const std::shared_ptr<Node>& goal_node, long long nodes_expanded, long long nodes_generated, double duration_sec) const {
+    void print_solution(std::ostream& os, const std::shared_ptr<Node>& goal_node, long long nodes_expanded, long long nodes_generated, double duration_sec) const {
         std::vector<std::string> path;
         std::shared_ptr<Node> current = goal_node;
         while (current != nullptr && current->parent != nullptr) {
@@ -211,23 +213,23 @@ private:
         }
         std::reverse(path.begin(), path.end());
 
-        std::cout << "b. Nodes expanded: " << nodes_expanded << "\n";
-        std::cout << "   Nodes generated: " << nodes_generated << "\n";
-        std::cout << "   CPU time: " << std::fixed << std::setprecision(4) << duration_sec << " seconds\n";
+        os << "b. Nodes expanded: " << nodes_expanded << "\n";
+        os << "   Nodes generated: " << nodes_generated << "\n";
+        os << "   CPU time: " << std::fixed << std::setprecision(4) << duration_sec << " seconds\n";
         
-        std::cout << "c. Solution path:\n   ";
+        os << "c. Solution path:\n   ";
         for (size_t i = 0; i < path.size(); ++i) {
-            std::cout << path[i] << (i == path.size() - 1 ? "" : ", ");
+            os << path[i] << (i == path.size() - 1 ? "" : ", ");
         }
-        std::cout << "\n";
-        std::cout << "   Number of moves: " << path.size() << "\n";
-        std::cout << "   Solution cost: " << std::fixed << std::setprecision(1) << goal_node->path_cost << "\n";
+        os << "\n";
+        os << "   Number of moves: " << path.size() << "\n";
+        os << "   Solution cost: " << std::fixed << std::setprecision(1) << goal_node->path_cost << "\n";
     }
     
     // --- Search Algorithms ---
 
-    void uniform_cost_tree_search() {
-        std::cout << "--- Uniform Cost Tree Search ---" << std::endl;
+    void uniform_cost_tree_search(std::ostream& os) {
+        os << "--- Uniform Cost Tree Search ---" << std::endl;
         auto start_time = std::chrono::high_resolution_clock::now();
 
         auto root = std::make_shared<Node>();
@@ -250,13 +252,12 @@ private:
             if (is_goal(current_node->state)) {
                 auto end_time = std::chrono::high_resolution_clock::now();
                 std::chrono::duration<double> duration = end_time - start_time;
-                print_first_n_expanded(first_expanded_states);
-                print_solution(current_node, nodes_expanded, nodes_generated, duration.count());
-                std::cout << "----------------------------------" << std::endl;
+                print_first_n_expanded(os, first_expanded_states);
+                print_solution(os, current_node, nodes_expanded, nodes_generated, duration.count());
+                os << "----------------------------------" << std::endl;
                 return;
             }
 
-            // Expand node
             nodes_expanded++;
             if (first_expanded_states.size() < REPORT_FIRST_N_EXPANDED) {
                 first_expanded_states.push_back(current_node->state);
@@ -269,11 +270,12 @@ private:
                 fringe.push(successor);
             }
         }
-        std::cout << "No solution found." << std::endl;
+        os << "No solution found." << std::endl;
+        os << "----------------------------------" << std::endl;
     }
 
-    void uniform_cost_graph_search() {
-        std::cout << "--- Uniform Cost Graph Search ---" << std::endl;
+    void uniform_cost_graph_search(std::ostream& os) {
+        os << "--- Uniform Cost Graph Search ---" << std::endl;
         auto start_time = std::chrono::high_resolution_clock::now();
 
         auto root = std::make_shared<Node>();
@@ -297,13 +299,12 @@ private:
             if (is_goal(current_node->state)) {
                 auto end_time = std::chrono::high_resolution_clock::now();
                 std::chrono::duration<double> duration = end_time - start_time;
-                print_first_n_expanded(first_expanded_states);
-                print_solution(current_node, nodes_expanded, nodes_generated, duration.count());
-                std::cout << "----------------------------------" << std::endl;
+                print_first_n_expanded(os, first_expanded_states);
+                print_solution(os, current_node, nodes_expanded, nodes_generated, duration.count());
+                os << "----------------------------------" << std::endl;
                 return;
             }
 
-            // Only expand if the state has not been visited before
             if (closed_set.find(current_node->state) == closed_set.end()) {
                 closed_set.insert(current_node->state);
                 
@@ -320,11 +321,14 @@ private:
                 }
             }
         }
-        std::cout << "No solution found." << std::endl;
+        os << "No solution found." << std::endl;
+        os << "----------------------------------" << std::endl;
     }
 
     // Recursive helper for Iterative Deepening
-    std::shared_ptr<Node> depth_limited_search(const std::shared_ptr<Node>& node, int limit, long long& expanded_count, long long& generated_count) {
+    std::shared_ptr<Node> depth_limited_search(const std::shared_ptr<Node>& node, int limit, 
+                                               long long& expanded_count, long long& generated_count, 
+                                               std::vector<State>& first_expanded) {
         if (is_goal(node->state)) {
             return node;
         }
@@ -334,11 +338,15 @@ private:
         }
 
         expanded_count++;
+        if(first_expanded.size() < REPORT_FIRST_N_EXPANDED) {
+            first_expanded.push_back(node->state);
+        }
+
         auto successors = expand(node);
         generated_count += successors.size();
 
         for (const auto& successor : successors) {
-            auto result = depth_limited_search(successor, limit - 1, expanded_count, generated_count);
+            auto result = depth_limited_search(successor, limit - 1, expanded_count, generated_count, first_expanded);
             if (result != nullptr) {
                 return result;
             }
@@ -347,16 +355,19 @@ private:
         return nullptr;
     }
 
-    void iterative_deepening_tree_search() {
-        std::cout << "--- Iterative Deepening Tree Search ---" << std::endl;
+    void iterative_deepening_tree_search(std::ostream& os) {
+        os << "--- Iterative Deepening Tree Search ---" << std::endl;
         auto start_time = std::chrono::high_resolution_clock::now();
         
         long long total_nodes_generated = 0;
         long long total_nodes_expanded = 0;
+        std::vector<State> first_expanded_states_final_iter;
 
         for (int depth_limit = 0; ; ++depth_limit) {
             long long expanded_in_iter = 0;
             long long generated_in_iter = 1; // root
+            std::vector<State> first_expanded_this_iter;
+
 
             auto root = std::make_shared<Node>();
             root->state = initial_state_;
@@ -364,52 +375,65 @@ private:
             root->path_cost = 0.0;
             root->depth = 0;
             
-            // This algorithm does not track first 5 expanded nodes as it re-expands them each iteration.
-            // For simplicity and adherence to the spirit of IDTS, we report only the final metrics.
-            std::shared_ptr<Node> result = depth_limited_search(root, depth_limit, expanded_in_iter, generated_in_iter);
+            std::shared_ptr<Node> result = depth_limited_search(root, depth_limit, expanded_in_iter, generated_in_iter, first_expanded_this_iter);
 
             total_nodes_expanded += expanded_in_iter;
             total_nodes_generated += generated_in_iter;
 
             if (result != nullptr) {
+                first_expanded_states_final_iter = first_expanded_this_iter;
                 auto end_time = std::chrono::high_resolution_clock::now();
                 std::chrono::duration<double> duration = end_time - start_time;
-                std::cout << "a. First 5 expanded nodes: Not tracked for IDTS due to repeated expansions.\n";
-                print_solution(result, total_nodes_expanded, total_nodes_generated, duration.count());
-                std::cout << "----------------------------------" << std::endl;
+                
+                print_first_n_expanded(os, first_expanded_states_final_iter);
+                print_solution(os, result, total_nodes_expanded, total_nodes_generated, duration.count());
+                os << "----------------------------------" << std::endl;
                 return;
             }
             if (depth_limit > 50) { // Safety break for very deep solutions
-                std::cout << "Search stopped after exceeding depth limit of 50." << std::endl;
+                os << "Search stopped after exceeding depth limit of 50." << std::endl;
                 break;
             }
         }
-        std::cout << "No solution found." << std::endl;
+        os << "No solution found." << std::endl;
+        os << "----------------------------------" << std::endl;
     }
 };
 
 
 int main() {
+    // Open a file stream to write the results
+    std::ofstream outfile("results.txt");
+
+    // Check if the file was opened successfully
+    if (!outfile.is_open()) {
+        std::cerr << "Error: Could not open results.txt for writing." << std::endl;
+        return 1;
+    }
+
     // --- Instance #1 ---
-    std::cout << "==========================\n";
-    std::cout << "       INSTANCE 1\n";
-    std::cout << "==========================\n";
+    outfile << "==========================\n";
+    outfile << "       INSTANCE 1\n";
+    outfile << "==========================\n";
     State initial_state_1;
     initial_state_1.agent_loc = {2, 2};
     initial_state_1.dirty_locs = {{1, 2}, {2, 4}, {3, 5}};
     VacuumSolver solver1(initial_state_1, 4, 5);
-    solver1.solve();
-    std::cout << "\n";
+    solver1.solve(outfile);
+    outfile << "\n";
 
     // --- Instance #2 ---
-    std::cout << "==========================\n";
-    std::cout << "       INSTANCE 2\n";
-    std::cout << "==========================\n";
+    outfile << "==========================\n";
+    outfile << "       INSTANCE 2\n";
+    outfile << "==========================\n";
     State initial_state_2;
     initial_state_2.agent_loc = {3, 2};
     initial_state_2.dirty_locs = {{1, 2}, {2, 1}, {2, 4}, {3, 3}};
     VacuumSolver solver2(initial_state_2, 4, 5);
-    solver2.solve();
+    solver2.solve(outfile);
+
+    outfile.close();
+    std::cout << "Successfully wrote results to results.txt" << std::endl;
 
     return 0;
 }
